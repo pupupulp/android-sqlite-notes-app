@@ -53,7 +53,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     Note.COLUMN_NOTE,
                     Note.COLUMN_TIMESTAMP
                 },
-                Note.COLUMN_ID + "= ?",
+                Note.COLUMN_ID + " = ?",
                 new String[] {
                     String.valueOf(id)
                 }, null, null, null, null);
@@ -117,5 +117,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 new String[] {
                     String.valueOf(note.getId())
                 });
+    }
+
+    public void deleteNote(Note note) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(Note.TABLE_NAME,
+                Note.COLUMN_ID + " = ?",
+                new String[] {
+                    String.valueOf(note.getId())
+                });
+
+        db.close();
     }
 }
