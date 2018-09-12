@@ -48,9 +48,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(Note.TABLE_NAME,
-                new String[] {Note.COLUMN_ID, Note.COLUMN_NOTE, Note.COLUMN_TIMESTAMP},
+                new String[] {
+                    Note.COLUMN_ID,
+                    Note.COLUMN_NOTE,
+                    Note.COLUMN_TIMESTAMP
+                },
                 Note.COLUMN_ID + "= ?",
-                new String[] {String.valueOf(id)}, null, null, null, null);
+                new String[] {
+                    String.valueOf(id)
+                }, null, null, null, null);
 
         if(cursor != null) cursor.moveToFirst();
 
@@ -97,5 +103,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
 
         return count;
+    }
+
+    public int updateNote(Note note) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Note.COLUMN_NOTE, note.getNote());
+
+        return db.update(Note.TABLE_NAME,
+                values,
+                Note.COLUMN_ID + " = ?",
+                new String[] {
+                    String.valueOf(note.getId())
+                });
     }
 }
