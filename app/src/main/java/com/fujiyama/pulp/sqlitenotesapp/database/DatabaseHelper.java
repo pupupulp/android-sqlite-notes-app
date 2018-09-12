@@ -8,6 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.fujiyama.pulp.sqlitenotesapp.database.model.Note;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "notesdb";
@@ -47,18 +50,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(Note.TABLE_NAME,
                 new String[] {Note.COLUMN_ID, Note.COLUMN_NOTE, Note.COLUMN_TIMESTAMP},
                 Note.COLUMN_ID + "= ?",
-                new String[] {String.valueOf(od)}, null, null, null, null);
+                new String[] {String.valueOf(id)}, null, null, null, null);
 
         if(cursor != null) cursor.moveToFirst();
 
         Note note = new Note(
                 cursor.getInt(cursor.getColumnIndex(Note.COLUMN_ID)),
                 cursor.getString(cursor.getColumnIndex(Note.COLUMN_NOTE)),
-                cursor.getString(cursor.getColumnIndex(Note.COLUMN_TIMESTAMP))
-        );
+                cursor.getString(cursor.getColumnIndex(Note.COLUMN_TIMESTAMP)));
 
         cursor.close();
 
         return note;
+    }
+
+    public List<Note> getAllNotes() {
+        List<Note> notes = new ArrayList<>();
+
+        String selectQuery = "SELECT * FROM " + Note.TABLE_NAME + " ORDER BY " + Note.COLUMN_TIMESTAMP + " DESC";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if(cursor.moveToFirst()) {
+            do {
+                notes.add(new Note(
+                        cursor.getInt(cursor.getColumnIndex(Note.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(Note.COLUMN_NOTE)),
+                        cursor.getString(cursor.getColumnIndex(Note.COLUMN_TIMESTAMP))));
+            } while(cursor.moveToNext());
+        }
+
+        db.close();
+
+        return notes;
     }
 }
